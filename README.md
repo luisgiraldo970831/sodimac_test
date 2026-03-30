@@ -4,6 +4,35 @@ Sitio editorial sobre cuidado y bienestar de mascotas, construido como prueba t�
 
 ---
 
+## Demo en producción
+
+**URL:** [https://sodimac-test.vercel.app/articulos](https://sodimac-test.vercel.app/articulos)
+
+El proyecto está desplegado en **Vercel**, la plataforma de los mismos creadores de Next.js. Esto no es una elección arbitraria — en el contexto de esta prueba agrega valor real por varias razones:
+
+### Por qué Vercel y no otro hosting
+
+| Aspecto | Lo que hace Vercel |
+|---------|-------------------|
+| **Integración nativa con Next.js** | Entiende el App Router, Server Components y las rutas especiales (`/robots.txt`, `/sitemap.xml`) sin configuración adicional |
+| **Deploy automático por push** | Cada `git push` a `main` dispara un nuevo deploy — el evaluador siempre ve la versión más reciente sin intervención manual |
+| **Edge Network global** | El servidor está distribuido en múltiples regiones — menor latencia desde cualquier país, lo que impacta directamente en el LCP (Core Web Vital) |
+| **HTTPS automático** | Certificado TLS provisionado sin configuración — requisito implícito para que Google indexe correctamente |
+| **Preview deployments** | Cada PR genera una URL de preview propia, lo que facilita la revisión de cambios antes de mergear |
+| **Variables de entorno** | `NEXT_PUBLIC_BASE_URL` configurada en el dashboard — las URLs del sitemap y JSON-LD apuntan al dominio correcto en producción |
+
+### Rutas que se pueden verificar en producción
+
+| URL | Qué verificar |
+|-----|---------------|
+| [/articulos](https://sodimac-test.vercel.app/articulos) | Listado SSR, imágenes optimizadas, paginación |
+| [/articulos/guia-cuidado-perros](https://sodimac-test.vercel.app/articulos/guia-cuidado-perros) | `<title>`, JSON-LD, breadcrumb, contenido formateado |
+| [/robots.txt](https://sodimac-test.vercel.app/robots.txt) | Directivas de crawling con URL del sitemap |
+| [/sitemap.xml](https://sodimac-test.vercel.app/sitemap.xml) | 9 URLs indexables con priority y changeFrequency |
+| [/articulos/ruta-que-no-existe](https://sodimac-test.vercel.app/articulos/ruta-que-no-existe) | HTTP 404 real con página personalizada |
+
+---
+
 ## Cómo correr el proyecto
 
 ### Requisitos
