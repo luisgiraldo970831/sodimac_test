@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next'
 import { getAllSlugs } from '@/lib/articles'
 
-const BASE_URL = 'https://patitas.vercel.app'
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://sodimac-test.vercel.app'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const slugs = getAllSlugs()

@@ -56,6 +56,8 @@ export default async function ArticuloDetallePage({ params }: Props) {
     notFound()
   }
 
+  const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://sodimac-test.vercel.app'
+
   const jsonLdData = {
     '@context': 'https://schema.org',
     '@type': 'Article',
@@ -70,11 +72,11 @@ export default async function ArticuloDetallePage({ params }: Props) {
     publisher: {
       '@type': 'Organization',
       name: 'Patitas',
-      url: 'https://patitas.vercel.app',
+      url: BASE_URL,
     },
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': `https://patitas.vercel.app/articulos/${article.slug}`,
+      '@id': `${BASE_URL}/articulos/${article.slug}`,
     },
   }
 
