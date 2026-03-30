@@ -345,3 +345,62 @@ Todas las páginas de detalle incluyen metadata OpenGraph completa para que las 
 - `aria-label` descriptivo en cada link de artículo para que lectores de pantalla anuncien el título, no solo "Leer artículo".
 - `role="dialog"` + `aria-modal="true"` + manejo de foco en el modal de arquitectura.
 
+---
+
+## Docker / Contenedorización
+
+El proyecto está listo para correr en un contenedor Docker gracias a dos cambios:
+
+### 1. `output: 'standalone'` en `next.config.ts`
+
+Next.js incluye un modo de salida `standalone` que genera un servidor Node.js autocontenido en `.next/standalone/`. En lugar de copiar `node_modules` completos (~600 MB), el bundle solo incluye los archivos realmente usados, reduciendo la imagen final a **~150 MB**.
+
+### 2. Dockerfile multi-etapa
+
+```dockerfile
+# Stage 1 — dependencias
+FROM node:20-alpine AS deps
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+
+# Stage 2 — build
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+RUN npm run build
+
+# Stage 3 — runner (solo artefactos mínimos)
+FROM node:20-alpine AS runner
+WORKDIR /app
+ENV NODE_ENV=production
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/public ./public
+EXPOSE 3000
+CMD ["node", "server.js"]
+```
+
+El patrón de tres etapas garantiza que el contexto de build (código fuente, `node_modules` de dev) **no quede en la imagen final**, siguiendo el principio de mínima superficie.
+
+### Cómo construir y correr
+
+```bash
+# Construir imagen
+docker build -t patitas .
+
+# Correr localmente
+docker run -p 3000:3000 \
+  -e NEXT_PUBLIC_BASE_URL=http://localhost:3000 \
+  patitas
+```
+
+La app queda disponible en `http://localhost:3000`.
+
+### `.dockerignore`
+
+El archivo `.dockerignore` excluye `node_modules`, `.next` y `.git` del contexto de build para que Docker no los suba innecesariamente al daemon, acelerando el tiempo de build.
+
+> **Nota:** Vercel sigue siendo el despliegue primario (CD automático, CDN global, HTTPS sin configuración). Docker documenta que la app es **portable y lista para producción** en cualquier entorno que soporte contenedores (ECS, Cloud Run, Kubernetes, etc.).
+
